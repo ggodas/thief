@@ -1,8 +1,6 @@
 var config = {};
 
 config.mongodb = {};
-config.mongodb.server = '127.0.0.1'; //mongoserver
-config.mongodb.port = 27017; //mongoserverport
-config.mongodb.databaseName = 'thief';
+config.mongodb.databaseConnection = 'mongodb://127.0.0.1:27017/thief';
 
 module.exports = config;

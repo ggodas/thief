@@ -1,18 +1,35 @@
 var mongoose = require('mongoose');
-var User = require('./model/user');
+
 var config = require('./config');
 var mongoConfig = config.mongodb;
+var restify = require('restify')
+, fs = require('fs')
 
-mongoose.connect('mongodb://' + mongoConfig.server + '/' + mongoConfig.databaseName);
 
-var john = User({
-	name: 'John Doe',
-	fone: '11986999005',
+var controllers = {}
+    , controllers_path = process.cwd() + '/controllers'
+fs.readdirSync(controllers_path).forEach(function (file) {
+    if (file.indexOf('.js') != -1) {
+        controllers[file.split('.')[0]] = require(controllers_path + '/' + file)
+    }
+})
+ 
+var server = restify.createServer();
+server
+    .use(restify.fullResponse())
+    .use(restify.bodyParser());
 
+server.post("/user", controllers.userController.createUser);
+
+var port = process.env.PORT || 3000;
+server.listen(port, function (err) {
+    if (err)
+        console.error(err)
+    else
+        console.log('Aplicativo pronto na porta: ' + port)
 });
 
-john.save(function(err) {
-  if (err) throw err;
+mongoose.connect(mongoConfig.databaseConnection);
+console.log(mongoConfig.databaseConnection);
 
-  console.log('User saved successfully!');
-});
+	
